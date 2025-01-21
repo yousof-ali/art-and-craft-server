@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -27,6 +27,26 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
+    const productCollection = client.db('craftoraDB').collection('allCraft');
+
+    app.get('/all-craft',async(req,res) => {
+      const result = await productCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/single-product/:id',async(req,res) => {
+      const id = req.params.id ;
+      const query = {_id : new ObjectId(id)};
+      const result = await productCollection.findOne(query)
+      res.send(result);
+    });
+
+    app.get('/category',async(req,res) => {
+      const query = req.query.category
+      const target = {subcategory_name : query};
+      const result = await productCollection.find(target).toArray();
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
