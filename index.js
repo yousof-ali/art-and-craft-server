@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express());
+app.use(express.json());
 
 
 
@@ -47,6 +47,46 @@ async function run() {
       const result = await productCollection.find(target).toArray();
       res.send(result);
     });
+
+    app.post('/new-craft',async(req,res) => {
+      const newData = req.body
+      const result = await productCollection.insertOne(newData);
+      res.send(result);
+    });
+
+    app.get('/my-craft',async(req,res) => {
+      const query = req.query.email
+      const target = {email:query};
+      const result = await productCollection.find(target).toArray()
+      res.send(result); 
+    })
+
+    app.put('/update/:id',async(req,res) => {
+      const id = req.params.id
+      const {img,item_name,subcategory_name,short_description,price,rating,customization,stockStatus} = req.body
+      const result = await productCollection.findOneAndUpdate(
+        {_id:new ObjectId(id)},
+        {
+          $set: {
+            img:img,
+            item_name:item_name,
+            subcategory_name:subcategory_name,
+            short_description:short_description,
+            price:price,
+            rating:rating,
+            customization:customization,
+            stockStatus:stockStatus
+          }
+        },
+        {
+          new:true,
+          upsert:true
+        }
+      );
+      res.send(result);
+      
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
