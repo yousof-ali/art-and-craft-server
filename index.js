@@ -90,6 +90,13 @@ async function run() {
       
     });
 
+    app.delete('/delete-mycraft/:id',async(req,res) => {
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)};
+      const result = await productCollection.deleteOne(query);
+      res.send(result);
+    })
+
   // favorites
     app.get('/getfav',async(req,res) => {
       // const qu = req.query.email
@@ -115,10 +122,7 @@ async function run() {
 
     // booking
 
-    app.get('/getbookmarks',async(req,res)=>{
-      const result = await bookmarkCollection.find().toArray();
-      res.send(result);
-    });
+    
 
     
 
