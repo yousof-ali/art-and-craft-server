@@ -28,6 +28,8 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     const productCollection = client.db('craftoraDB').collection('allCraft');
+    const favoritesCollection = client.db('craftoraDB').collection('favorites');
+    const bookmarkCollection = client.db('craftoraDB').collection('Bookmark');
 
     app.get('/all-craft',async(req,res) => {
       const result = await productCollection.find().toArray();
@@ -59,7 +61,8 @@ async function run() {
       const target = {email:query};
       const result = await productCollection.find(target).toArray()
       res.send(result); 
-    })
+    });
+
 
     app.put('/update/:id',async(req,res) => {
       const id = req.params.id
@@ -86,6 +89,38 @@ async function run() {
       res.send(result);
       
     });
+
+  // favorites
+    app.get('/getfav',async(req,res) => {
+      // const qu = req.query.email
+      // const filter = {email:qu}
+      const result = await favoritesCollection.find().toArray()
+      res.send(result);
+    })
+
+    app.post('/favorites',async(req,res) => {
+      const {ids,email,status} = req.body
+      const exist = await favoritesCollection.findOne({ids,email})
+      if(!exist){
+        const result = await favoritesCollection.insertOne({ids,email,status});
+        res.send(result)
+      }
+    });
+
+    app.delete('/unfav/:id',async(req,res) => {
+      const query = {ids : req.params.id}
+      const result = await favoritesCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    // booking
+
+    app.get('/getbookmarks',async(req,res)=>{
+      const result = await bookmarkCollection.find().toArray();
+      res.send(result);
+    });
+
+    
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
