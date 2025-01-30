@@ -9,8 +9,8 @@ const port = process.env.PORT || 5000;
 
 app.use(cors({
   origin:[
-    'https://art-and-craft-c921b.web.app',
-    'https://art-and-craft-c921b.firebaseapp.com'
+    'https://art-craft-240fb.web.app',
+    'https://art-craft-240fb.firebaseapp.com'
   ]
 }));
 app.use(express.json());
